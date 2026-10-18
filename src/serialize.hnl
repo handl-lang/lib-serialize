@@ -1,0 +1,24 @@
+--- `serialize.serialize` / `serialize.deserialize` — pure-Handl format dispatch.
+--- The format arg is a string ("json", "yaml", "toml") or a serializer
+--- object { type: "serializer", name: <fmt> }.
+---
+--- Transitional: json impl imported by path until kits wire `json` as a
+--- module into loaded packages.
+from "../../lib-json/src/stringify.hnl" import stringify
+from "../../lib-json/src/parse.hnl" import parse
+
+fmt_name := (f) ~> if typeof.is(f, typeof.str()) { f } else { f.name }
+
+export serialize := (v, fmt) ~> do {
+  n := fmt_name(fmt)
+  if n == "json" { stringify(v) } else {
+    throw "serialize.serialize: unsupported format " + n
+  }
+}
+
+export deserialize := (s, fmt) ~> do {
+  n := fmt_name(fmt)
+  if n == "json" { parse(s) } else {
+    throw "serialize.deserialize: unsupported format " + n
+  }
+}

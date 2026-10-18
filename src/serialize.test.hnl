@@ -1,0 +1,4 @@
+from "./index" import * as m
+test_s := assert m.serialize({ a: 1 }, "json") = "{\"a\":1}"
+test_d := assert m.deserialize("{\"a\":1}", "json") = { a: 1 }
+test_obj := assert m.deserialize(m.serialize([1, { b: "x" }], "json"), "json") = [1, { b: "x" }]

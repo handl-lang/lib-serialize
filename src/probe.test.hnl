@@ -1,0 +1,2 @@
+test_j := assert encoding.encode({ a: 1 }, json.json()) = "{\"a\":1}"
+test_jd := assert encoding.decode("[1]", json.json()) = [1]
