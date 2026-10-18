@@ -1,155 +1,27 @@
 //! # handl-lib-serialize
 //!
-//! Format-agnostic serialization framework.
-//!
-//! Provides `Encoder`, `Decoder`, `serialize`, and `deserialize` abstractions
-//! shared by the `handl-lib-*` format crates.
-//!
-//! This crate has been migrated to the `op`/`handl` declaration form
-//! (ADR-0077 Phase 4). The serialize interface is declared in
-//! `handl-packages/serialize/serialize.hnl`. The [`Encoder`], [`Decoder`],
-//! [`Serializer`], and [`SerializerRegistry`] traits remain in Rust — they
-//! are implemented by concrete format crates (e.g. `plugin-lib-json`,
-//! `plugin-lib-toml`, `plugin-lib-yaml`). The [`SerializeLibraryPlugin`]
-//! wraps the generic [`HandlLibraryPlugin`] with the `.hnl` source,
-//! eliminating the hand-rolled `Plugin` trait scaffolding.
+//! `serialize` — generic serialization contract. `.hnl` `serialize`/
+//! `deserialize` dispatch on the format name (`"json"`, `"yaml"`, `"toml"`)
+//! or `{ type: "serializer", name }` records. The `Serializer`/`Encoder`/
+//! `Decoder`/`SerializeError` *contract types* remain in Rust for the
+//! native serializer impls in `plugin-lib-stdlib` (toml/yaml ops).
+#![allow(dead_code)]
 
 pub mod error;
-pub mod ops;
 pub mod serializer;
 pub mod traits;
 
 pub use error::SerializeError;
 pub use serializer::{Serializer, SerializerRegistry};
-pub use ops::{serialize_op_registry, serialize_op_registry_with, SERIALIZE_OPS};
 pub use traits::{Decoder, Encoder};
 
-use handl_plugin_lib_handl::HandlLibraryPlugin;
-
-/// The handl source declaring the serialize interface — the single source
-/// of truth for the serialize API surface. Loaded at compile time from the
-/// kit-stdlib data dir.
+/// The handl source declaring the serialize interface.
 pub const SERIALIZE_HNL: &str = include_str!("index.hnl");
+pub const SERIALIZE_OPS: &[&str] = &["serialize.serialize", "serialize.deserialize"];
 
-/// Serialize a value using the provided encoder.
-pub fn serialize<T, E>(value: &T, encoder: &E) -> Result<E::Output, SerializeError>
-where
-    E: Encoder<T>,
-{
-    encoder.encode(value)
-}
-
-/// Deserialize input using the provided decoder.
-pub fn deserialize<I, T, D>(input: &I, decoder: &D) -> Result<T, SerializeError>
-where
-    I: ?Sized,
-    D: Decoder<I, T>,
-{
-    decoder.decode(input)
-}
-
-// ---------------------------------------------------------------------------
-// SerializeLibraryPlugin (wraps HandlLibraryPlugin)
-// ---------------------------------------------------------------------------
-
-/// A `Library` plugin that registers the `serialize` interface via the
-/// generic [`HandlLibraryPlugin`].
-///
-/// This is the Phase 4 replacement for the old hand-rolled `LibraryPlugin`.
-/// The serialize interface is declared in `serialize.hnl`; the trait
-/// definitions remain in Rust. The generic loader handles module
-/// registration.
-pub struct SerializeLibraryPlugin {
-    inner: HandlLibraryPlugin,
-}
-
-impl SerializeLibraryPlugin {
-    /// Create a new `SerializeLibraryPlugin`.
-    pub fn new() -> Self {
-        Self {
-            inner: HandlLibraryPlugin::new_with_caps(
-                "serialize",
-                "lib.serialize",
-                "lib-serialize",
-                SERIALIZE_HNL,
-                &[],
-            ),
-        }
-    }
-}
-
-impl Default for SerializeLibraryPlugin {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl handl_platform::Plugin for SerializeLibraryPlugin {
-    fn id(&self) -> &str {
-        self.inner.id()
-    }
-
-    fn name(&self) -> &str {
-        self.inner.name()
-    }
-
-    fn capabilities(&self) -> &[handl_platform::CapabilityId] {
-        self.inner.capabilities()
-    }
-
-    fn metadata(
-        &self,
-        capability: &handl_platform::CapabilityId,
-    ) -> Option<handl_platform::CapabilityMetadata> {
-        self.inner.metadata(capability)
-    }
-
-    fn contribute(
-        &self,
-        ctx: &mut handl_platform::ContributionContext,
-    ) -> Result<(), handl_platform::PlatformError> {
-        self.inner.contribute(ctx)
-    }
-
-    fn run(
-        &self,
-        request: &handl_platform::CapabilityRequest,
-        ctx: &mut handl_platform::PluginContext,
-    ) -> Result<handl_platform::CapabilityResponse, handl_platform::PlatformError> {
-        self.inner.run(request, ctx)
-    }
-}
-
-/// Build a [`HandlLibraryPlugin`] for serialize.
-///
-/// This is provided for consumers that prefer to use the generic plugin
-/// directly instead of [`SerializeLibraryPlugin`].
-pub fn serialize_handl_plugin() -> HandlLibraryPlugin {
-    HandlLibraryPlugin::new_with_caps(
-        "serialize",
-        "lib.serialize",
-        "lib-serialize",
-        SERIALIZE_HNL,
-        &[],
-    )
-}
-
-// ---------------------------------------------------------------------------
-// Legacy LibraryPlugin (re-exported for backward compat)
-// ---------------------------------------------------------------------------
-
-/// Legacy `LibraryPlugin` — delegates to [`SerializeLibraryPlugin`].
-///
-/// This preserves the old `plugin::LibraryPlugin` API for downstream crates
-/// that import `handl_plugin_lib_serialize::LibraryPlugin`.
-pub use SerializeLibraryPlugin as LibraryPlugin;
-
-/// `.hnl` package source set — index + sibling files (wired into kits via
-/// `handl_module_from_sources`).
+/// `.hnl` package source set — index + siblings.
 pub const SERIALIZE_FUNCS: &[&str] = &["serialize","deserialize"];
 pub const SERIALIZE_SOURCES: &[(&str, &str, &[&str])] = &[
-    ("serialize", include_str!("serialize.hnl"), &["serialize","deserialize"]),
+    ("serialize", include_str!("serialize.hnl"), &["fmt_name","serialize","deserialize"]),
 ];
-
-/// Flattened single-source `.hnl` (for `stdlib::MODULES` table rows).
 pub const SERIALIZE_FLAT_HNL: &str = include_str!("index_flat.hnl");

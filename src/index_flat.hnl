@@ -49,7 +49,7 @@ op "serialize.serialize" : (Value * Value) -> String
   guarantee: True
 op "serialize.deserialize" : (String * Value) -> Value
   guarantee: True
-handle "serialize.serialize" with rust_serialize_serialize
-handle "serialize.deserialize" with rust_serialize_deserialize
+handle "serialize.serialize" with serialize
+handle "serialize.deserialize" with deserialize
 
 --- pure-handl impls:
