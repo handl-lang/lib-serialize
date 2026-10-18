@@ -1,0 +1,27 @@
+name: lib-serialize
+root: /home/luis/GitHub/handl-lang/lib-serialize
+purpose: ''
+modules:
+- handl-lib-serialize
+- lib-serialize
+commands:
+- cargo check
+- cargo test --workspace
+provenance:
+  files:
+  - Cargo.toml
+  - src/error.rs
+  - src/traits.rs
+  - src/ops.rs
+  - src/serializer.rs
+  - src/lib.rs
+  hashes:
+  - 64680f6f1c3a4c57d670233b69c75595b2c3631d
+  - eb81d8f5c07fdc5291d66f83b037c2634639de4d
+  - 7d35d0cbe88fab6700f8082c03dbec4ea9328b98
+  - f79646bc011553009731ffe06e3ccb321d80f9a1
+  - 371b3f22f6937ee5ea7245fccab1171374e50cee
+  - e7cfdbbc1df99f5ee1b9719f7ffe751042e56848
+  commit_sha: ad2449f40de64b03aadffd27bf83c58738b8cd2e
+  generated_at: '1792281230'
+  generator: kuda/0.1.0

@@ -17,8 +17,9 @@ thiserror = "2"
 [patch."https://github.com/handl-lang/kernel"]
 handl-value = { path = "../kernel/crates/handl-value" }
 
+[patch."https://github.com/handl-lang/lib-ops"]
+handl-lib-ops = { path = "../lib-ops" }
+
 [patch."https://github.com/handl-lang/platform"]
 handl-platform = { path = "../platform/crates/platform" }
 handl-plugin-lib-handl = { path = "../platform/crates/plugin-lib-handl" }
-[patch."https://github.com/handl-lang/lib-ops"]
-handl-lib-ops = { path = "../lib-ops" }

@@ -1,0 +1,27 @@
+name: handl-lib-serialize
+path: Cargo.toml
+purpose: 'serialize: Handl stdlib port + the serialization trait (ADR-0128 split).'
+api:
+- name: handl-lib-serialize
+  kind: module
+  file: Cargo.toml
+  line: 1
+  module: handl-lib-serialize
+deps:
+- handl-lib-ops
+- handl-platform
+- handl-plugin-lib-handl
+- handl-value
+- serde_json
+- thiserror
+notes: ''
+verify:
+- Cargo.toml
+provenance:
+  files:
+  - Cargo.toml
+  hashes:
+  - 64680f6f1c3a4c57d670233b69c75595b2c3631d
+  commit_sha: ad2449f40de64b03aadffd27bf83c58738b8cd2e
+  generated_at: '1792281230'
+  generator: kuda-template/0.1.0
