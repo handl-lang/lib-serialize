@@ -1,0 +1,55 @@
+--- `serialize.serialize` / `serialize.deserialize` — pure-Handl format dispatch.
+--- The format arg is a string ("json", "yaml", "toml") or a serializer
+--- object { type: "serializer", name: <fmt> }.
+---
+--- Transitional: json impl imported by path until kits wire `json` as a
+--- module into loaded packages.
+from "json" import stringify
+from "json" import parse
+
+fmt_name := (f) ~> if typeof.is(f, typeof.str()) { f } else { f.name }
+
+export serialize := (v, fmt) ~> do {
+  n := fmt_name(fmt)
+  if n == "json" { stringify(v) } else {
+    throw "serialize.serialize: unsupported format " + n
+  }
+}
+
+export deserialize := (s, fmt) ~> do {
+  n := fmt_name(fmt)
+  if n == "json" { parse(s) } else {
+    throw "serialize.deserialize: unsupported format " + n
+  }
+}
+
+--- serialize -- generic serialization to/from strings for the handl runtime.
+---
+--- Single source of truth for the `serialize` stdlib interface: 2 functions
+--- covering serialization of `serde_json::Value` to a string (json/yaml/toml)
+--- and deserialization of a string back into a `Value`. The Rust bridge in
+--- `plugin-lib-utils` loads this file via `include_str!`, parses the `cap`
+--- declarations for the plugin capability surface, and registers the Rust
+--- handls (handlers) in an `OpRegistry` that dispatches each `op` to its
+--- native Rust impl backed by a `SerializerRegistry`.
+---
+--- Both functions are FFI atoms (they delegate to `SerializerRegistry` from
+--- `plugin-lib-serialize`, which wraps Json/Yaml/Toml serializers, and cannot
+--- be expressed as pure handl arrows without losing the exact error messages
+--- the tests rely on). The `op`/`handl` declaration form (ADR-0077 Phase 2)
+--- declares the interface; the Rust `Function` impls in `ops.rs` provide the
+--- logic.
+---
+--- ## Capability declarations (ADR-0077 Phase 4)
+--- serialize.serialize -- serialize a value into a string using a named format.
+--- serialize.deserialize -- deserialize a string into a value using a named format.
+cap "serialize.serialize"
+cap "serialize.deserialize"
+op "serialize.serialize" : (Value * Value) -> String
+  guarantee: True
+op "serialize.deserialize" : (String * Value) -> Value
+  guarantee: True
+handle "serialize.serialize" with rust_serialize_serialize
+handle "serialize.deserialize" with rust_serialize_deserialize
+
+--- pure-handl impls:

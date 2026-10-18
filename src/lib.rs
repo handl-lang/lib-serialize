@@ -150,3 +150,6 @@ pub const SERIALIZE_FUNCS: &[&str] = &["serialize","deserialize"];
 pub const SERIALIZE_SOURCES: &[(&str, &str, &[&str])] = &[
     ("serialize", include_str!("serialize.hnl"), &["serialize","deserialize"]),
 ];
+
+/// Flattened single-source `.hnl` (for `stdlib::MODULES` table rows).
+pub const SERIALIZE_FLAT_HNL: &str = include_str!("index_flat.hnl");
