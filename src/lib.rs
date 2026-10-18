@@ -143,3 +143,10 @@ pub fn serialize_handl_plugin() -> HandlLibraryPlugin {
 /// This preserves the old `plugin::LibraryPlugin` API for downstream crates
 /// that import `handl_plugin_lib_serialize::LibraryPlugin`.
 pub use SerializeLibraryPlugin as LibraryPlugin;
+
+/// `.hnl` package source set — index + sibling files (wired into kits via
+/// `handl_module_from_sources`).
+pub const SERIALIZE_FUNCS: &[&str] = &["serialize","deserialize"];
+pub const SERIALIZE_SOURCES: &[(&str, &str, &[&str])] = &[
+    ("serialize", include_str!("serialize.hnl"), &["serialize","deserialize"]),
+];

@@ -4,8 +4,8 @@
 ---
 --- Transitional: json impl imported by path until kits wire `json` as a
 --- module into loaded packages.
-from "../../lib-json/src/stringify.hnl" import stringify
-from "../../lib-json/src/parse.hnl" import parse
+from "json" import stringify
+from "json" import parse
 
 fmt_name := (f) ~> if typeof.is(f, typeof.str()) { f } else { f.name }
 
