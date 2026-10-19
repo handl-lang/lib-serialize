@@ -30,3 +30,5 @@ handle "serialize.deserialize" with deserialize
 --- pure-handl impls:
 from "./serialize.hnl" export serialize
 from "./serialize.hnl" export deserialize
+from "./serialize.hnl" export toml
+from "./serialize.hnl" export yaml

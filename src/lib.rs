@@ -20,8 +20,8 @@ pub const SERIALIZE_HNL: &str = include_str!("index.hnl");
 pub const SERIALIZE_OPS: &[&str] = &["serialize.serialize", "serialize.deserialize"];
 
 /// `.hnl` package source set — index + siblings.
-pub const SERIALIZE_FUNCS: &[&str] = &["serialize","deserialize"];
+pub const SERIALIZE_FUNCS: &[&str] = &["serialize","deserialize","toml","yaml"];
 pub const SERIALIZE_SOURCES: &[(&str, &str, &[&str])] = &[
-    ("serialize", include_str!("serialize.hnl"), &["fmt_name","serialize","deserialize"]),
+    ("serialize", include_str!("serialize.hnl"), &["fmt_name","serialize","deserialize","toml","yaml"]),
 ];
 pub const SERIALIZE_FLAT_HNL: &str = include_str!("index_flat.hnl");

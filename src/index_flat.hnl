@@ -1,6 +1,8 @@
 --- `serialize.serialize` / `serialize.deserialize` — pure-Handl format dispatch.
 --- The format arg is a string ("json", "yaml", "toml") or a serializer
---- object { type: "serializer", name: <fmt> }.
+--- object { type: "serializer", name: <fmt>, serialize, deserialize } —
+--- produced by `toml()`/`yaml()` below (or any backend exposing the same
+--- arrow-field shape, like `encoding`'s codec dispatch).
 ---
 --- Transitional: json impl imported by path until kits wire `json` as a
 --- module into loaded packages.
@@ -10,18 +12,30 @@ from "json" import parse
 fmt_name := (f) ~> if typeof.is(f, typeof.str()) { f } else { f.name }
 
 export serialize := (v, fmt) ~> do {
-  n := fmt_name(fmt)
-  if n == "json" { stringify(v) } else {
-    throw "serialize.serialize: unsupported format " + n
+  if typeof.is(fmt, typeof.str()) {
+    if fmt == "json" { stringify(v) } else {
+      throw "serialize.serialize: unsupported format " + fmt
+    }
+  } else {
+    (fmt.serialize)(v)
   }
 }
 
 export deserialize := (s, fmt) ~> do {
-  n := fmt_name(fmt)
-  if n == "json" { parse(s) } else {
-    throw "serialize.deserialize: unsupported format " + n
+  if typeof.is(fmt, typeof.str()) {
+    if fmt == "json" { parse(s) } else {
+      throw "serialize.deserialize: unsupported format " + fmt
+    }
+  } else {
+    (fmt.deserialize)(s)
   }
 }
+
+--- Serializer producers: records carrying the native `-c` backend's
+--- serialize/deserialize arrows. `serialize.serialize(v, toml())` calls
+--- `toml_c.serialize(v)`; likewise for `yaml()` -> `yaml_c.*`.
+export toml := () ~> ({ type: "serializer", name: "toml", serialize: (v) ~> toml_c.serialize(v), deserialize: (s) ~> toml_c.deserialize(s) })
+export yaml := () ~> ({ type: "serializer", name: "yaml", serialize: (v) ~> yaml_c.serialize(v), deserialize: (s) ~> yaml_c.deserialize(s) })
 
 --- serialize -- generic serialization to/from strings for the handl runtime.
 ---
