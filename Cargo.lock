@@ -19,7 +19,7 @@ dependencies = [
 [[package]]
 name = "handl-language"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/kernel?branch=main#286c50e265371f6a365167ec7254464bf9c726bd"
+source = "git+https://github.com/handl-lang/kernel?branch=main#5f22283e1bdd9b1f5c6f886027bc04e535b2aa6d"
 dependencies = [
  "handl-value",
  "hnl-engine",
@@ -47,7 +47,7 @@ source = "git+https://github.com/handl-lang/lib-loader?branch=main#3960b588c2c2f
 [[package]]
 name = "handl-lib-ops"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/kernel?branch=main#286c50e265371f6a365167ec7254464bf9c726bd"
+source = "git+https://github.com/handl-lang/kernel?branch=main#5f22283e1bdd9b1f5c6f886027bc04e535b2aa6d"
 dependencies = [
  "handl-platform",
  "serde_json",
@@ -85,7 +85,7 @@ dependencies = [
 [[package]]
 name = "handl-plugin-ext-diag"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/host?branch=main#2ac2492cf0060117eb5f0a2fce6da5e098350a61"
+source = "git+https://github.com/handl-lang/host?branch=main#7ebe493efc76d55249adbb13ff5632f10f1f3904"
 dependencies = [
  "handl-language",
  "handl-platform",
@@ -171,7 +171,7 @@ checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
 [[package]]
 name = "hnl-engine"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine?branch=main#308ef2c19266d55b87c6235bee28e8d2a66fd8dc"
+source = "git+https://github.com/handl-lang/engine?branch=main#af9423f4d4d34e17b17458265a739232d0e9d521"
 dependencies = [
  "handl-value",
  "serde",
@@ -181,7 +181,7 @@ dependencies = [
 [[package]]
 name = "hnl-engine-exec"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine-exec?branch=main#bf5337bf8bc4c6e9c393a4606c464e376e3a0865"
+source = "git+https://github.com/handl-lang/engine-exec?branch=main#1f7976dae808c246bb8a0e58ca7643399a723006"
 dependencies = [
  "handl-language",
  "handl-platform",
@@ -252,7 +252,7 @@ dependencies = [
 [[package]]
 name = "hnl-engine-parse-pratt"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine-parse-pratt?branch=main#e49e10f625a91c603df4cd159dba14d38470de4a"
+source = "git+https://github.com/handl-lang/engine-parse-pratt?branch=main#c4b2c92a77c59ecebed947c125fef4c26c24ec5f"
 dependencies = [
  "handl-language",
  "hnl-engine-parse",
@@ -262,7 +262,7 @@ dependencies = [
 [[package]]
 name = "hnl-engine-transform"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine-transform?branch=main#a3da7a9fda9fab25ecc047c653ffccd3cc4f9495"
+source = "git+https://github.com/handl-lang/engine-transform?branch=main#7b061719eeabaa563ee56f2e743cd83620231a29"
 dependencies = [
  "handl-language",
  "handl-plugin-ext-diag",
@@ -272,7 +272,7 @@ dependencies = [
 [[package]]
 name = "hnl-engine-transform-rewrite"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine-transform-rewrite?branch=main#62ea51a8bed235073fa1d1c87cc8fdbf08a6727f"
+source = "git+https://github.com/handl-lang/engine-transform-rewrite?branch=main#5420c1b6f99b04cd84aad5763b10fe093d516b1c"
 dependencies = [
  "handl-language",
  "handl-value",
@@ -283,7 +283,7 @@ dependencies = [
 [[package]]
 name = "hnl-engine-typecheck"
 version = "0.1.0"
-source = "git+https://github.com/handl-lang/engine-typecheck?branch=main#35bf9cb2309c5b60f45c7da914f42a66c77e5353"
+source = "git+https://github.com/handl-lang/engine-typecheck?branch=main#4b3f57978c0fd2e2a77f6ee536bcf534a4e81073"
 dependencies = [
  "handl-language",
  "handl-platform",
