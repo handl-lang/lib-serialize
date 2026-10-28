@@ -9,3 +9,7 @@ src/index.hnl   the interface
 src/{lib,serializer,traits,error}.rs   the traits
 src/ops.rs      the two ops + `serialize_op_registry_with(registry)`
 ```
+
+## License
+
+MIT.
