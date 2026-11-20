@@ -3,8 +3,10 @@ name = "handl-lib-serialize"
 version = "0.1.0"
 edition = "2024"
 description = "serialize: Handl stdlib port + the serialization trait (ADR-0128 split)."
-license = "MIT OR Apache-2.0"
+license = "MIT"
 repository = "https://github.com/handl-lang/lib-serialize"
+homepage = "https://github.com/handl-lang/lib-serialize"
+readme = "README.md"
 
 [dependencies]
 serde_json = "1"
