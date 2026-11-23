@@ -1,0 +1,184 @@
+# workflows/gate.yaml — per-push gate for handl-lang/lib-serialize.
+#
+# Replaces ci.sh as the bupha/peregrin gate (ci.sh stays in the tree
+# for reference until the runner flips). Invoke:
+#
+#   GATE_REPO="$PWD" GATE_RESULTS="$PWD/.gate-results.jsonl" \
+#     peregrin campaign run workflows/gate.yaml --result .ci-result.json
+#
+# Pipeline: gate.init → gate.ensure → two parallel legs → gate.join →
+# gate.report. The legs port ci.sh's two halves:
+#
+#   gate.handl — the handl-gates bundle's canonical handl fragment.
+#     While ci.sh exists it runs `bash ci.sh` (hnl-gate.sh +
+#     `cargo test --all-targets` — i.e. BOTH halves); once ci.sh is
+#     retired it falls back to `hnl typecheck/lint/test` over the
+#     canonical-dialect sources under src/.
+#   gate.rust  — bespoke leg porting ci.sh's cargo half verbatim
+#     (`cargo test --all-targets` under ci.sh's env/git-config
+#     exports, shared CARGO_TARGET_DIR via the ensure-siblings env
+#     file). It no-ops while ci.sh exists — the handl leg's ci.sh
+#     run already covers it — and activates the moment ci.sh is
+#     gone, so coverage is exactly-once in both worlds.
+#
+# ensure-siblings (bundle fragment) recreates the ../<repo> sibling
+# layout + shared CARGO_TARGET_DIR env file for detached worktrees;
+# the rust leg consumes the env file. ci.sh's defensive
+# `sed -i s|../<repo>|$PWD|` self-patch rewrite is not ported: this
+# manifest carries no `path = "../lib-serialize"` dep, so the
+# second-spelling hazard cannot arise.
+#
+# Verdict: .ci-result.json `.conclusion` == "success".
+name: gate-lib-serialize-dual
+
+result:
+  - event: gate.pass
+    conclusion: success
+  - event: gate.fail
+    conclusion: failure
+  - event: gate.failed
+    conclusion: failure
+  - event: gate.init.failed
+    conclusion: failure
+  - event: ensure.failed
+    conclusion: failure
+
+capabilities:
+  env:
+    - GATE_REPO
+    - GATE_RESULTS
+    - GATE_HNL
+    - GATE_HNL_EXT_DIR
+    - GATE_SRC_DIR
+    - GATE_TARGET_DIR
+    - GATE_ENV_FILE
+
+nodes:
+  # --- init: validate inputs, fresh results file --------------------
+  - id: gate.init
+    driver: shell
+    on: [start]
+    emits: [gate.due, gate.init.failed]
+    params:
+      cmd: >-
+        set -u;
+        REPO="${config.gate.repo:-${env("GATE_REPO","")}}";
+        [ -n "$REPO" ] || { echo "gate.repo is required — set GATE_REPO or config.gate.repo to an absolute checkout path"; exit 1; };
+        [ -d "$REPO" ] || { echo "no such directory: $REPO"; exit 1; };
+        RES="${config.gate.results:-${env("GATE_RESULTS","$HOME/.local/share/handl-gates/lib-serialize.results.jsonl")}}";
+        mkdir -p "$(dirname "$RES")";
+        : > "$RES";
+        echo "gate-lib-serialize: repo=$REPO results=$RES"
+      timeout: 60
+      emit:
+        "0": gate.due
+        default: gate.init.failed
+
+  # --- ensure: worktree sibling layout + shared cargo target env ----
+  - include: tamias:handl-gates@0.2.1//lib/ensure-siblings.node.yml
+    id: gate.ensure
+    on: [gate.due]
+    emits: [ensure.done, ensure.failed]
+    params:
+      repo: '${config.gate.repo:-${env("GATE_REPO","")}}'
+      target_dir: '${config.gate.target_dir:-${env("GATE_TARGET_DIR","auto")}}'
+      env_file: '${config.gate.env_file:-${env("GATE_ENV_FILE","auto")}}'
+      emit:
+        "0": ensure.done
+        default: ensure.failed
+
+  # --- leg 1: canonical handl fragment (ci.sh while present, else ---
+  # --- the hnl typecheck/lint/test fallback over src/) --------------
+  - include: tamias:handl-gates@0.2.1//lib/handl-gate.node.yml
+    id: gate.handl
+    on: [ensure.done]
+    emits: [gate.leg.end]
+    params:
+      repo: '${config.gate.repo:-${env("GATE_REPO","")}}'
+      results: '${config.gate.results:-${env("GATE_RESULTS","$HOME/.local/share/handl-gates/lib-serialize.results.jsonl")}}'
+      hnl: '${config.gate.hnl:-${env("GATE_HNL","$HOME/GitHub/handl-lang/.ci-target/dogfood/release/hnl")}}'
+      hnl_ext_dir: '${config.gate.hnl_ext_dir:-${env("GATE_HNL_EXT_DIR","$HOME/GitHub/handl-lang/.ci-target/dogfood/release")}}'
+      src_dir: '${config.gate.src_dir:-${env("GATE_SRC_DIR","")}}'
+      emit:
+        "0": gate.leg.end
+        default: gate.leg.end
+
+  # --- leg 2: ci.sh's cargo half — `cargo test --all-targets` -----
+  # --- under ci.sh's env/git-config exports. Skips while ci.sh ----
+  # --- exists (the handl leg's ci.sh run covers it). --------------
+  - id: gate.rust
+    driver: shell
+    on: [ensure.done]
+    emits: [gate.leg.end]
+    params:
+      repo: '${config.gate.repo:-${env("GATE_REPO","")}}'
+      results: '${config.gate.results:-${env("GATE_RESULTS","$HOME/.local/share/handl-gates/lib-serialize.results.jsonl")}}'
+      env_file: '${config.gate.env_file:-${env("GATE_ENV_FILE","auto")}}'
+      timeout: 3600
+      cmd: |-
+        set -uo pipefail
+        REPO="${params.repo}"
+        RESULTS="${params.results}"
+        START=$(date +%s)
+        cd "$REPO" && REPO="$(pwd)" || { echo "no such directory: ${params.repo}"; exit 1; }
+        if [ -f ci.sh ]; then
+          echo "ci.sh present — rust leg covered by the handl leg's ci.sh run; skipping"
+          exit 0
+        fi
+        EF="${params.env_file}"
+        [ "$EF" = "auto" ] && EF="$(dirname "$REPO")/.gate-env/$(basename "$REPO").env"
+        [ -z "$EF" ] || [ ! -f "$EF" ] || . "$EF"
+        export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH" \
+          CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 \
+          CARGO_NET_GIT_FETCH_WITH_CLI="${CARGO_NET_GIT_FETCH_WITH_CLI:-true}" \
+          CARGO_BUILD_JOBS="${CI_BUILD_JOBS:-2}" RUST_TEST_THREADS="${CI_JOBS:-2}"
+        # Cross-repo git deps resolve over ssh locally — same
+        # insteadOf rewrite ci.sh installs.
+        if [ -z "${GIT_CONFIG_COUNT:-}" ]; then
+          export GIT_CONFIG_COUNT=1
+          export GIT_CONFIG_KEY_0="url.git@github.com:handl-lang/.insteadOf"
+          export GIT_CONFIG_VALUE_0="https://github.com/handl-lang/"
+        fi
+        cargo test --all-targets
+        rc=$?
+        if [ -n "$RESULTS" ]; then
+          esc=$(printf '%s' "$REPO" | sed 's/\\/\\\\/g; s/"/\\"/g')
+          printf '{"family":"rust","repo":"%s","rc":%s,"secs":%s}\n' "$esc" "$rc" "$(( $(date +%s) - START ))" >> "$RESULTS" 2>/dev/null || true
+        fi
+        exit $rc
+      emit:
+        "0": gate.leg.end
+        default: gate.leg.end
+
+  # --- join: both legs emit gate.leg.end exactly once ---------------
+  - id: gate.join
+    driver: noop
+    on: [gate.leg.end]
+    fan_in:
+      count: 2
+      emit: gate.mapped
+    emits: [gate.mapped]
+
+  # --- report: verdict from results.jsonl — any rc != 0 fails ------
+  - id: gate.report
+    driver: shell
+    on: [gate.mapped]
+    emits: [gate.pass, gate.fail]
+    params:
+      cmd: |-
+        set -u
+        F="${config.gate.results:-${env("GATE_RESULTS","$HOME/.local/share/handl-gates/lib-serialize.results.jsonl")}}"
+        REPO="${config.gate.repo:-${env("GATE_REPO","")}}"
+        [ -s "$F" ] || { echo "no results record — gate produced nothing"; exit 1; }
+        total=$(wc -l < "$F" | tr -d ' ')
+        fails=$(awk -F'"rc":' '{split($2,a,","); if (a[1]+0 != 0) c++} END{print c+0}' "$F")
+        # ci.sh present → the handl leg's ci.sh run covers both halves
+        # (1 record); ci.sh gone → handl fallback + rust leg (2 records).
+        if [ -f "$REPO/ci.sh" ]; then want=1; else want=2; fi
+        [ "$total" -ge "$want" ] || { echo "expected >= $want lane record(s), got $total"; cat "$F"; exit 1; }
+        { echo "gate-lib-serialize: $total lane record(s), $fails failed"; cat "$F"; } || true
+        [ "$fails" -eq 0 ]
+      timeout: 60
+      emit:
+        "0": gate.pass
+        default: gate.fail
