@@ -75,7 +75,7 @@ nodes:
         default: gate.init.failed
 
   # --- ensure: worktree sibling layout + shared cargo target env ----
-  - include: tamias:handl-gates@0.2.1//lib/ensure-siblings.node.yml
+  - include: tamias:handl-gates@0.3.0//lib/ensure-siblings.node.yml
     id: gate.ensure
     on: [gate.due]
     emits: [ensure.done, ensure.failed]
@@ -89,7 +89,7 @@ nodes:
 
   # --- leg 1: canonical handl fragment (ci.sh while present, else ---
   # --- the hnl typecheck/lint/test fallback over src/) --------------
-  - include: tamias:handl-gates@0.2.1//lib/handl-gate.node.yml
+  - include: tamias:handl-gates@0.3.0//lib/handl-gate.node.yml
     id: gate.handl
     on: [ensure.done]
     emits: [gate.leg.end]
