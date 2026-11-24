@@ -2,26 +2,124 @@ name: handl-lib-serialize
 path: Cargo.toml
 purpose: 'serialize: Handl stdlib port + the serialization trait (ADR-0128 split).'
 api:
+- name: Decoder
+  kind: trait
+  file: src/traits.rs
+  line: 13
+  module: handl-lib-serialize
+- name: Encoder
+  kind: trait
+  file: src/traits.rs
+  line: 4
+  module: handl-lib-serialize
+- name: SERIALIZE_FLAT_HNL
+  kind: const
+  file: src/lib.rs
+  line: 27
+  module: handl-lib-serialize
+- name: SERIALIZE_FUNCS
+  kind: const
+  file: src/lib.rs
+  line: 23
+  module: handl-lib-serialize
+- name: SERIALIZE_HNL
+  kind: const
+  file: src/lib.rs
+  line: 19
+  module: handl-lib-serialize
+- name: SERIALIZE_OPS
+  kind: const
+  file: src/lib.rs
+  line: 20
+  module: handl-lib-serialize
+- name: SERIALIZE_SOURCES
+  kind: const
+  file: src/lib.rs
+  line: 24
+  module: handl-lib-serialize
+- name: SerializeError
+  kind: type
+  file: src/error.rs
+  line: 6
+  module: handl-lib-serialize
+- name: Serializer
+  kind: trait
+  file: src/serializer.rs
+  line: 11
+  module: handl-lib-serialize
+- name: SerializerRegistry
+  kind: type
+  file: src/serializer.rs
+  line: 21
+  module: handl-lib-serialize
+- name: error
+  kind: module
+  file: src/lib.rs
+  line: 10
+  module: handl-lib-serialize
+- name: get
+  kind: function
+  file: src/serializer.rs
+  line: 40
+  module: handl-lib-serialize
 - name: handl-lib-serialize
   kind: module
   file: Cargo.toml
   line: 1
   module: handl-lib-serialize
+- name: new
+  kind: function
+  file: src/error.rs
+  line: 13
+  module: handl-lib-serialize
+- name: new
+  kind: function
+  file: src/serializer.rs
+  line: 27
+  module: handl-lib-serialize
+- name: serializer
+  kind: module
+  file: src/lib.rs
+  line: 11
+  module: handl-lib-serialize
+- name: traits
+  kind: module
+  file: src/lib.rs
+  line: 12
+  module: handl-lib-serialize
+- name: with
+  kind: function
+  file: src/serializer.rs
+  line: 34
+  module: handl-lib-serialize
 deps:
-- handl-lib-ops
-- handl-platform
-- handl-plugin-lib-handl
-- handl-value
 - serde_json
 - thiserror
+- thiserror
+- serde_json
+- error
+- serializer
+- traits
 notes: ''
 verify:
 - Cargo.toml
+- src/error.rs
+- src/lib.rs
+- src/serializer.rs
+- src/traits.rs
 provenance:
   files:
   - Cargo.toml
+  - src/error.rs
+  - src/lib.rs
+  - src/serializer.rs
+  - src/traits.rs
   hashes:
-  - 64680f6f1c3a4c57d670233b69c75595b2c3631d
-  commit_sha: ad2449f40de64b03aadffd27bf83c58738b8cd2e
-  generated_at: '1792281230'
-  generator: kuda-template/0.1.0
+  - ff46ec896b6d5fb37c0c289d8f3986d276e9f76e
+  - eb81d8f5c07fdc5291d66f83b037c2634639de4d
+  - 24c9f9ab9a2e91d01b26123511e097839a899603
+  - 371b3f22f6937ee5ea7245fccab1171374e50cee
+  - 7d35d0cbe88fab6700f8082c03dbec4ea9328b98
+  commit_sha: bab0782b5ea5fe67b01b60277ce662ec3a7adc0d
+  generated_at: '1795484421'
+  generator: kuda-template/0.1.4

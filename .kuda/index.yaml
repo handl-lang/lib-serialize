@@ -1,27 +1,23 @@
 name: lib-serialize
 root: /home/luis/GitHub/handl-lang/lib-serialize
-purpose: ''
+purpose: '`serialize` — the format-agnostic serialization port: `Serializer`/`Encoder`/'
 modules:
 - handl-lib-serialize
-- lib-serialize
+- xtask
 commands:
 - cargo check
 - cargo test --workspace
+tree_digest: 2323e7be72bb203d3ff6a9155ac18cc7735f7b86
+files_total: 7
 provenance:
   files:
   - Cargo.toml
-  - src/error.rs
-  - src/traits.rs
-  - src/ops.rs
-  - src/serializer.rs
-  - src/lib.rs
+  - README.md
+  - xtask/Cargo.toml
   hashes:
-  - 64680f6f1c3a4c57d670233b69c75595b2c3631d
-  - eb81d8f5c07fdc5291d66f83b037c2634639de4d
-  - 7d35d0cbe88fab6700f8082c03dbec4ea9328b98
-  - f79646bc011553009731ffe06e3ccb321d80f9a1
-  - 371b3f22f6937ee5ea7245fccab1171374e50cee
-  - e7cfdbbc1df99f5ee1b9719f7ffe751042e56848
-  commit_sha: ad2449f40de64b03aadffd27bf83c58738b8cd2e
-  generated_at: '1792281230'
+  - ff46ec896b6d5fb37c0c289d8f3986d276e9f76e
+  - 569154a47939a5a4c334ed7608904a869146112a
+  - 56825fa02f4bcfa4409922455217615ea0d9d5f0
+  commit_sha: bab0782b5ea5fe67b01b60277ce662ec3a7adc0d
+  generated_at: '1795484421'
   generator: kuda/0.1.0
