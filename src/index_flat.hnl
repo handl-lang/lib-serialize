@@ -59,9 +59,9 @@ export yaml := () ~> ({ type: "serializer", name: "yaml", serialize: (v) ~> yaml
 --- serialize.deserialize -- deserialize a string into a value using a named format.
 cap "serialize.serialize"
 cap "serialize.deserialize"
-op "serialize.serialize" : (Value * Value) -> String
+op "serialize.serialize" : (Value * Value) ~> String
   guarantee: True
-op "serialize.deserialize" : (String * Value) -> Value
+op "serialize.deserialize" : (String * Value) ~> Value
   guarantee: True
 handle "serialize.serialize" with serialize
 handle "serialize.deserialize" with deserialize
