@@ -1,1 +1,1 @@
-{ modules: ["serialize"], description: "Format-agnostic serialization port: Serializer/Encoder/Decoder traits.", license: "MIT" }
+{ modules: ["serialize"], name: "serialize", description: "Format-agnostic serialization port: Serializer/Encoder/Decoder traits.", license: "MIT" }
