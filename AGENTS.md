@@ -25,7 +25,7 @@
 ```bash
 cargo xtask gate        # fmt --check → clippy -D warnings → test → doc
 HNL=../host-cli/target/debug/hnl scripts/hnl-gate.sh
-./ci.sh                # full gate (bupha entry)
+# bupha entry: workflows/gate.yaml (handl-gates campaign)
 ```
 
 ## License
