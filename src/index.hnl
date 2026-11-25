@@ -1,19 +1,17 @@
 --- serialize -- generic serialization to/from strings for the handl runtime.
 ---
---- Single source of truth for the `serialize` stdlib interface: 2 functions
+--- Contract surface for the `serialize` stdlib interface: 2 functions
 --- covering serialization of `serde_json::Value` to a string (json/yaml/toml)
---- and deserialization of a string back into a `Value`. The Rust bridge in
---- `plugin-lib-utils` loads this file via `include_str!`, parses the `cap`
---- declarations for the plugin capability surface, and registers the Rust
---- handls (handlers) in an `OpRegistry` that dispatches each `op` to its
---- native Rust impl backed by a `SerializerRegistry`.
+--- and deserialization of a string back into a `Value`. The `cap`/`op`/
+--- `handle` decls below declare the capability and signature surface;
+--- `plugin-lib-stdlib`'s `serialize` `ModuleSpec` loads
+--- `index_flat.hnl` via `include_str!` and the `cap` lines feed the plugin
+--- capability surface.
 ---
---- Both functions are FFI atoms (they delegate to `SerializerRegistry` from
---- `plugin-lib-serialize`, which wraps Json/Yaml/Toml serializers, and cannot
---- be expressed as pure handl arrows without losing the exact error messages
---- the tests rely on). The `op`/`handl` declaration form (ADR-0077 Phase 2)
---- declares the interface; the Rust `Function` impls in `ops.rs` provide the
---- logic.
+--- The functions are pure `.hnl` — serializer/codec dispatch is a
+--- field-call on the format record (`serialize.toml()`/`yaml()` below,
+--- backed by the `toml_c`/`yaml_c` native modules); there is no
+--- `SerializerRegistry` or `ops.rs` impl (that path is gone).
 ---
 --- ## Capability declarations (ADR-0077 Phase 4)
 --- serialize.serialize -- serialize a value into a string using a named format.
