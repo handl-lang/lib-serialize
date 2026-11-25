@@ -12,7 +12,7 @@
 | `src/serialize.hnl`, `serialize.test.hnl`, `probe.test.hnl` | .hnl surface + tests |
 | `src/{lib,serializer,traits,error}.rs` | the Rust trait crate |
 | `Cargo.toml`, `xtask/` | crate manifest + `cargo xtask` gate |
-| `pkg.hnl`, `scripts/hnl-gate.sh`, `ci.sh` | manifest / hnl gate / bupha entry |
+| `pkg.hnl`, `scripts/hnl-gate.sh`, `workflows/gate.yaml` | manifest / hnl gate / bupha entry |
 
 ## Contract
 
