@@ -17,14 +17,14 @@ src/{lib,serializer,traits,error}.rs   the traits
 ```text
 src/        the .hnl interface + the Rust trait crate
 pkg.hnl     package manifest — modules, deps, description, license
-ci.sh       bupha entry → scripts/hnl-gate.sh
+workflows/gate.yaml       bupha entry (handl-gates) → scripts/hnl-gate.sh
 ```
 
 ## Gate
 
 ```bash
 HNL=../host-cli/target/debug/hnl scripts/hnl-gate.sh
-./ci.sh                # full gate (bupha entry)
+cargo xtask gate  # full gate (bupha entry)
 ```
 
 ## Development
