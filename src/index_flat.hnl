@@ -8,6 +8,7 @@
 --- module into loaded packages.
 from "json" import stringify
 from "json" import parse
+from "typeof" import * as typeof
 
 fmt_name := (f) ~> if typeof.is(f, typeof.str()) { f } else { f.name }
 
